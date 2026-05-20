@@ -1,0 +1,12 @@
+diff --git a/browser/foo/Widget.js b/browser/foo/Widget.js
+index 1802524..b49f19b 100644
+--- a/browser/foo/Widget.js
++++ b/browser/foo/Widget.js
+@@ -1,6 +1,6 @@
+ export function makeWidget() {
+   return {
+-    id: "search-widget",
++    id: crypto.randomUUID(),
+     label: "Search",
+   };
+ }

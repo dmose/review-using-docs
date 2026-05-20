@@ -1,0 +1,10 @@
+{
+  "required_substrings": [
+    "REVIEW_CONTRACT_STABLE_WIDGET_IDS",
+    "browser/foo/Widget.js",
+    "crypto.randomUUID"
+  ],
+  "forbidden_substrings": [
+    "No findings"
+  ]
+}

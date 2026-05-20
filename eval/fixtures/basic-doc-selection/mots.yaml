@@ -1,0 +1,12 @@
+%YAML 1.2
+---
+repo: review-using-docs-fixture
+modules:
+  - name: Widget UI
+    machine_name: widget_ui
+    description: Test module for review-using-docs doc selection.
+    includes:
+      - browser/foo/**/*
+    excludes: []
+    docs:
+      - docs/widget-review-contract.md
