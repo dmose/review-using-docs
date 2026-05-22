@@ -7,6 +7,5 @@ modules:
     description: Test module for review-using-docs doc selection.
     includes:
       - browser/foo/**/*
+      - browser/foo/docs/widget-review-contract.md
     excludes: []
-    docs:
-      - docs/widget-review-contract.md

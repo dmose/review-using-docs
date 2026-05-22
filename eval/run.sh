@@ -63,7 +63,7 @@ init_fixture_repo() {
   (
     cd "$work_dir"
     git init -q
-    git add mots.yaml docs browser
+    git add mots.yaml browser
     git commit -qm "baseline"
     git apply patch.diff
   )
@@ -91,7 +91,7 @@ validate_fixture_dir() {
   for f in mots.yaml prompt.txt patch.diff expected.json; do
     [[ -f "$fixture_dir/$f" ]] || missing+=("$f")
   done
-  for f in browser docs; do
+  for f in browser; do
     [[ -d "$fixture_dir/$f" ]] || missing+=("$f/")
   done
   if [[ ${#missing[@]} -gt 0 ]]; then
@@ -260,7 +260,7 @@ test_run_dispatches_both_modes_with_mock_claude() {
   local temp_dir bin_dir fake_claude fake_grade fixture_dir
   temp_dir="$(mktemp -d)"
   fixture_dir="$temp_dir/fixtures/synthetic"
-  mkdir -p "$fixture_dir/browser/foo" "$fixture_dir/docs"
+  mkdir -p "$fixture_dir/browser/foo"
   cat > "$fixture_dir/mots.yaml" <<'EOF'
 modules: []
 EOF
@@ -281,9 +281,6 @@ EOF
 EOF
   cat > "$fixture_dir/browser/foo/Widget.js" <<'EOF'
 export const value = "old";
-EOF
-  cat > "$fixture_dir/docs/widget-review-contract.md" <<'EOF'
-contract
 EOF
 
   bin_dir="$temp_dir/bin"
