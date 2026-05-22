@@ -35,6 +35,26 @@ In a Claude session inside the project you want to review:
 /review-using-docs review the changed files under <some/subdir>
 ```
 
+## MCP dependency: `moz`
+
+The plugin declares a `moz` MCP server (HTTP, pointing at
+`https://mcp-dev.moz.tools/mcp`) in `review-using-docs/.mcp.json`. This
+makes the plugin self-contained: installing it in a fresh repo gives the
+skill access to `moz` with no extra setup.
+
+If you're using the plugin inside a Firefox checkout that *also* declares
+`moz` at project scope, the two declarations dedupe automatically.
+Claude Code's [scope precedence](https://code.claude.com/docs/en/mcp#scope-hierarchy-and-precedence)
+is `local > project > user > plugin > claude.ai connectors`, and plugin
+entries match by endpoint — so a project-scope `moz` at the same URL
+wins and the plugin's entry is silently dropped. No conflict, nothing
+for the user to disable.
+
+The dependency is declared in a separate `.mcp.json` (not inline in
+`plugin.json`) because inline `mcpServers` is currently dropped during
+manifest parsing
+([anthropics/claude-code#16143](https://github.com/anthropics/claude-code/issues/16143)).
+
 ## Eval
 
 `eval/` contains an output-based canary eval. The fixture's reference doc

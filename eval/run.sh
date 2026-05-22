@@ -122,6 +122,9 @@ run_skill_mode() {
     init_fixture_repo "$work_dir"
     mkdir -p "$work_dir/.claude/skills/$PLUGIN_NAME"
     cp "$SKILL_SRC" "$work_dir/.claude/skills/$PLUGIN_NAME/SKILL.md"
+    # Mirror the plugin's MCP dependencies into the work dir as project-scope
+    # config, so skill-mode and plugin-mode exercise the same servers.
+    cp "$REPO_ROOT/$PLUGIN_NAME/.mcp.json" "$work_dir/.mcp.json"
     (cd "$work_dir" && bash -lc "$claude_cmd" < prompt.txt > "$output_file" 2>&1)
     grade_output "$output_file" "$fixture_dir/expected.json"
   ) || rc=$?
@@ -249,11 +252,19 @@ run_all() {
 test_authoritative_manifests_have_expected_fields() {
   local mkt="$REPO_ROOT/.claude-plugin/marketplace.json"
   local plg="$REPO_ROOT/$PLUGIN_NAME/.claude-plugin/plugin.json"
+  local mcp="$REPO_ROOT/$PLUGIN_NAME/.mcp.json"
   assert_file_contains "$mkt" "\"name\": \"$MARKETPLACE_NAME\""
   assert_file_contains "$mkt" "\"source\": \"./$PLUGIN_NAME\""
   assert_file_not_contains "$mkt" "run-plugin-eval.sh"
   assert_file_contains "$plg" "\"name\": \"$PLUGIN_NAME\""
   assert_file_not_contains "$plg" "dmosedale/llm-tools"
+  # Inline mcpServers in plugin.json is dropped by Claude Code's parser
+  # (anthropics/claude-code#16143). Plugin must ship a separate .mcp.json
+  # at its root pointing at moz.
+  assert_file_not_contains "$plg" "mcpServers"
+  require_file "$mcp"
+  assert_file_contains "$mcp" "\"moz\""
+  assert_file_contains "$mcp" "https://mcp-dev.moz.tools/mcp"
 }
 
 test_run_dispatches_both_modes_with_mock_claude() {
@@ -338,9 +349,15 @@ EOF
 }
 
 run_self_test() {
-  test_authoritative_manifests_have_expected_fields
-  test_run_dispatches_both_modes_with_mock_claude
-  info "self-test: PASS"
+  local rc=0
+  test_authoritative_manifests_have_expected_fields || rc=1
+  test_run_dispatches_both_modes_with_mock_claude || rc=1
+  if [[ $rc -eq 0 ]]; then
+    info "self-test: PASS"
+  else
+    info "self-test: FAIL"
+  fi
+  return $rc
 }
 
 # ---------- CLI ----------
