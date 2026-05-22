@@ -21,17 +21,16 @@ Use this skill when the user asks for a code review that should consult document
    - Record the mapping from changed file to module name and `machine_name`.
 
 3. Select reference docs from Mots.
-   - For each matched module, read its `docs` field.
-   - Treat links in `docs` as the reference sources for the review.
+   - For each matched module, scan its `includes` list.
+   - Treat an entry as a documentation path if it contains the substring `docs` outside of `docshell` (i.e., the regex `docs(?!hell)` matches the entry).
+   - If the entry is a glob or directory, read the documentation files it expands to.
    - Deduplicate docs across modules.
-   - Prefer local repository documentation when a `docs` entry clearly maps to a local file or directory.
-   - Use external docs URLs from `docs` when no local equivalent is available.
-   - Do not substitute nearby README files, generated Mots pages, or `meta.url` entries unless the matched module has no usable `docs` field.
+   - If no `includes` entry of the matched module qualifies, the module has no Mots-listed docs — note this and continue with ordinary review.
 
 4. Read docs before reviewing code.
    - Extract expected behavior, architecture, invariants, API contracts, ownership boundaries, and testing expectations.
    - Track which docs informed which files or modules.
-   - If a matched module has no usable `docs` entries, say so briefly and continue with ordinary review.
+   - If a matched module has no qualifying `includes` entries, say so briefly and continue with ordinary review.
 
 5. Review the changed code normally.
    - Prioritize correctness, regressions, edge cases, API contract mismatches, missing tests, maintainability, and security or privacy risks.
@@ -52,4 +51,4 @@ Use this skill when the user asks for a code review that should consult document
 - Use `searchfox-cli` for Firefox source discovery outside local changed files.
 - Use narrow local commands for changed-file discovery and reading selected docs.
 - `/mots.yaml` is the source of module path metadata and review documentation links.
-- The `docs` field in matched modules is the source of truth for reference material.
+- Entries in matched modules' `includes` whose path contains `docs` (outside `docshell`) are the source of truth for reference material.

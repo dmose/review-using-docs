@@ -2,11 +2,13 @@
 
 A Claude Code skill that, when invoked on a code review task, first reads
 `/mots.yaml` in the project root, maps each changed file to its module,
-follows the module's `docs` field to load the relevant reference docs, and
-*then* performs the code review with those docs in context.
+scans each module's `includes` for documentation paths (entries whose path
+contains `docs` outside `docshell`), loads those reference docs, and *then*
+performs the code review with those docs in context.
 
 Built for Firefox / mozilla-central, but works in any tree whose top-level
-`mots.yaml` follows the same shape (modules with `includes` and `docs`).
+`mots.yaml` follows the same shape (modules with `includes` paths that
+identify their docs by containing `docs` outside `docshell`).
 
 ## Install
 
@@ -59,5 +61,5 @@ Override the Claude invocation via `CLAUDE_CMD=…` and preserve work dirs
 for inspection with `KEEP_WORK_DIR=1`.
 
 To add a new eval, drop a directory under `eval/fixtures/<name>/` containing
-`mots.yaml`, `prompt.txt`, `patch.diff`, `expected.json`, `browser/`, and
-`docs/`. `bash eval/run.sh` picks it up automatically.
+`mots.yaml`, `prompt.txt`, `patch.diff`, `expected.json`, and `browser/`.
+`bash eval/run.sh` picks it up automatically.
