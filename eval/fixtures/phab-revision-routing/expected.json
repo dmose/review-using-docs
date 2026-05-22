@@ -1,0 +1,9 @@
+{
+  "required_substrings": [
+    "D291014",
+    "mcp__moz__get_phabricator_revision"
+  ],
+  "forbidden_substrings": [
+    "No findings"
+  ]
+}

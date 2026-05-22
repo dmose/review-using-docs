@@ -58,6 +58,17 @@ stage_fixture() {
   cp -R "$fixture_dir/." "$work_dir/"
 }
 
+# Optional per-fixture extra args appended to the claude invocation.
+# A fixture may ship claude_args.txt (e.g. with --disallowed-tools ...) to
+# tune the run without forcing every fixture through the same flags.
+fixture_extra_args() {
+  local fixture_dir="$1"
+  local args_file="$fixture_dir/claude_args.txt"
+  if [[ -f "$args_file" ]]; then
+    tr '\n' ' ' < "$args_file"
+  fi
+}
+
 init_fixture_repo() {
   local work_dir="$1"
   (
@@ -65,7 +76,11 @@ init_fixture_repo() {
     git init -q
     git add mots.yaml browser
     git commit -qm "baseline"
-    git apply patch.diff
+    # An empty patch.diff models a fixture with no local diff (e.g. Phab mode,
+    # where the change lives on phabricator instead of in the worktree).
+    if [[ -s patch.diff ]]; then
+      git apply patch.diff
+    fi
   )
 }
 
@@ -125,7 +140,12 @@ run_skill_mode() {
     # Mirror the plugin's MCP dependencies into the work dir as project-scope
     # config, so skill-mode and plugin-mode exercise the same servers.
     cp "$REPO_ROOT/$PLUGIN_NAME/.mcp.json" "$work_dir/.mcp.json"
-    (cd "$work_dir" && bash -lc "$claude_cmd" < prompt.txt > "$output_file" 2>&1)
+    local extra_args
+    extra_args="$(fixture_extra_args "$fixture_dir")"
+    # Pin MCP to the project .mcp.json staged at run.sh:142 so skill-mode runs
+    # are hermetic against ~/.claude.json. Plugin mode intentionally does NOT
+    # pin: it exists to validate that the plugin's own MCP wiring auto-loads.
+    (cd "$work_dir" && bash -lc "$claude_cmd --mcp-config .mcp.json --strict-mcp-config $extra_args" < prompt.txt > "$output_file" 2>&1)
     grade_output "$output_file" "$fixture_dir/expected.json"
   ) || rc=$?
 
@@ -152,8 +172,8 @@ run_plugin_mode() {
     rm -rf "$work_dir"
     stage_fixture "$fixture_dir" "$work_dir"
     init_fixture_repo "$work_dir"
-    claude plugin validate "$REPO_ROOT" >/dev/null
-    claude plugin validate "$REPO_ROOT/$PLUGIN_NAME" >/dev/null
+    claude plugin validate --strict "$REPO_ROOT" >/dev/null
+    claude plugin validate --strict "$REPO_ROOT/$PLUGIN_NAME" >/dev/null
     mkdir -p "$plugin_cache"
     (
       cd "$work_dir"
@@ -161,7 +181,9 @@ run_plugin_mode() {
       CLAUDE_CODE_PLUGIN_CACHE_DIR="$plugin_cache" claude plugin install "$PLUGIN_ID" --scope local
     )
     # claude plugin install --scope local auto-populates enabledPlugins; no manual enable step.
-    (cd "$work_dir" && CLAUDE_CODE_PLUGIN_CACHE_DIR="$plugin_cache" bash -lc "$claude_cmd" < prompt.txt > "$output_file" 2>&1)
+    local extra_args
+    extra_args="$(fixture_extra_args "$fixture_dir")"
+    (cd "$work_dir" && CLAUDE_CODE_PLUGIN_CACHE_DIR="$plugin_cache" bash -lc "$claude_cmd $extra_args" < prompt.txt > "$output_file" 2>&1)
     grade_output "$output_file" "$fixture_dir/expected.json"
   ) || rc=$?
 
