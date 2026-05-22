@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "review-using-docs-local",
+  "description": "Distribution channel for the review-using-docs plugin, which loads documentation referenced by /mots.yaml before reviewing changed files.",
+  "owner": {
+    "name": "review-using-docs"
+  },
+  "plugins": [
+    {
+      "name": "review-using-docs",
+      "description": "Review changed files against documentation selected from /mots.yaml before performing a normal code review.",
+      "version": "0.1.0",
+      "author": {
+        "name": "review-using-docs"
+      },
+      "source": "./review-using-docs"
+    }
+  ]
+}
