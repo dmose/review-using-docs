@@ -48,4 +48,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Eval fixture's `mots.yaml` shape aligned with the real `mots.yaml`
   schema used by mozilla-central.
 
+### Build
+
+- Repo-level `.npmrc` sets `omit=optional`, skipping promptfoo's optional
+  cloud-provider SDKs (AWS, Azure, GCP auth, IBM, Playwright, Sharp, swc,
+  HuggingFace, etc.). Drops `npm install` footprint from ~692 to ~416
+  packages.
+
 [Unreleased]: https://github.com/dmose/review-using-docs/commits/main
