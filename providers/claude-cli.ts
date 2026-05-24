@@ -30,7 +30,12 @@ export interface ProviderResponse {
 const PLUGIN_NAME = 'review-using-docs';
 const MARKETPLACE_NAME = 'review-using-docs-local';
 const PLUGIN_ID = `${PLUGIN_NAME}@${MARKETPLACE_NAME}`;
-const DEFAULT_CLAUDE_CMD = 'claude -p --permission-mode bypassPermissions --setting-sources project,local';
+const DEFAULT_CLAUDE_CMD = 'claude -p --output-format stream-json --verbose --permission-mode bypassPermissions --setting-sources project,local';
+
+export interface ToolCall {
+  name: string;
+  input: unknown;
+}
 
 function shellSplit(input: string): string[] {
   // shell-quote.parse returns ParseEntry[] which can include objects for operators,
@@ -61,6 +66,53 @@ function run(
   const r = spawnSync(cmd, args, opts);
   if (r.error) throw r.error;
   return { stdout: r.stdout ?? '', stderr: r.stderr ?? '', status: r.status ?? -1 };
+}
+
+export interface ParsedStream {
+  text: string;
+  toolCalls: ToolCall[];
+  resultEventSeen: boolean;
+}
+
+// Parses Claude CLI `--output-format stream-json --verbose` output. Each line
+// is a JSON event; non-JSON lines (warnings, etc.) are skipped. The authoritative
+// final text comes from the `result` event's `result` field. Falls back to
+// concatenated text content from assistant messages if no result event arrives
+// (e.g. early termination, mock CLIs that only emit assistant events).
+export function parseStreamJson(stdout: string): ParsedStream {
+  const toolCalls: ToolCall[] = [];
+  const assistantTexts: string[] = [];
+  let resultText: string | undefined;
+  let resultEventSeen = false;
+  for (const line of stdout.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    let event: Record<string, unknown>;
+    try {
+      const parsed: unknown = JSON.parse(trimmed);
+      if (!parsed || typeof parsed !== 'object') continue;
+      event = parsed as Record<string, unknown>;
+    } catch {
+      continue;
+    }
+    const type = event['type'];
+    if (type === 'assistant') {
+      const message = event['message'] as { content?: unknown } | undefined;
+      const content = Array.isArray(message?.content) ? message.content : [];
+      for (const block of content as Array<Record<string, unknown>>) {
+        if (block['type'] === 'tool_use' && typeof block['name'] === 'string') {
+          toolCalls.push({ name: block['name'], input: block['input'] });
+        } else if (block['type'] === 'text' && typeof block['text'] === 'string') {
+          assistantTexts.push(block['text']);
+        }
+      }
+    } else if (type === 'result') {
+      resultEventSeen = true;
+      if (typeof event['result'] === 'string') resultText = event['result'];
+    }
+  }
+  const text = resultText ?? assistantTexts.join('');
+  return { text, toolCalls, resultEventSeen };
 }
 
 function copyRecursive(src: string, dest: string): void {
@@ -181,11 +233,18 @@ export default class ClaudeCliProvider {
       const stdout = r.stdout ?? '';
       const stderr = r.stderr ?? '';
       const exitCode = r.status ?? -1;
+      const parsed = parseStreamJson(stdout);
 
       response = {
-        output: stdout,
+        output: parsed.text,
         ...(exitCode !== 0 ? { error: stderr.trim() || `claude exited ${exitCode}` } : {}),
-        metadata: { exitCode, mode, fixtureName, ...(keep ? { workDir } : {}) },
+        metadata: {
+          exitCode,
+          mode,
+          fixtureName,
+          toolCalls: parsed.toolCalls,
+          ...(keep ? { workDir } : {}),
+        },
       };
     } catch (e) {
       response = {

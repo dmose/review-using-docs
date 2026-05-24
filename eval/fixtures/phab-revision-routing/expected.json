@@ -1,9 +1,14 @@
 {
   "required_substrings": [
-    "D291014",
-    "mcp__moz__get_phabricator_revision"
+    "D291014"
   ],
   "forbidden_substrings": [
     "No findings"
+  ],
+  "tool_calls": [
+    {
+      "name": "mcp__moz__get_phabricator_revision",
+      "input_contains": "291014"
+    }
   ]
 }

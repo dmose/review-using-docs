@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Mock `claude` used by the eval selftest. Echoes a known marker plus stdin so
-# the generated assertions (required_substrings: ["MOCK_CLAUDE_OK", "selftest prompt"])
-# pass without ever hitting the real Claude CLI.
+# Mock `claude` for the eval selftest. The provider now parses
+# `--output-format stream-json --verbose`, so the mock must emit at least one
+# `result` event carrying MOCK_CLAUDE_OK + stdin as its `result` text. Anything
+# else (plugin subcommands invoked during wirePluginMode) keeps the plain-text
+# behaviour the provider only inspects via exit status.
 set -euo pipefail
 
 if [[ "${1:-}" == "plugin" ]]; then
@@ -9,5 +11,12 @@ if [[ "${1:-}" == "plugin" ]]; then
   exit 0
 fi
 
-echo "MOCK_CLAUDE_OK"
-cat
+text="MOCK_CLAUDE_OK
+$(cat)"
+python3 -c '
+import json, sys
+text = sys.stdin.read()
+print(json.dumps({"type": "system", "subtype": "init", "session_id": "mock"}))
+print(json.dumps({"type": "assistant", "message": {"content": [{"type": "text", "text": text}]}}))
+print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": text}))
+' <<< "$text"

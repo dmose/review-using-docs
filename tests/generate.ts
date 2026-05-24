@@ -1,14 +1,38 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+interface ToolCallExpectation {
+  name: string;
+  input_contains?: string;
+}
+
 interface Expected {
   required_substrings?: string[];
   forbidden_substrings?: string[];
+  tool_calls?: ToolCallExpectation[];
 }
 
 interface Assertion {
   type: string;
   value?: string | string[];
+}
+
+function toolCallAssertion(expectation: ToolCallExpectation): Assertion {
+  // Runs against context.providerResponse.metadata.toolCalls populated by
+  // providers/claude-cli.ts from stream-json tool_use events. Substring match
+  // on JSON.stringify(input) is intentionally loose so callers can target either
+  // a primitive value or a key/value pair without committing to the tool's
+  // input schema.
+  const name = JSON.stringify(expectation.name);
+  const needle = expectation.input_contains;
+  const inputCheck =
+    needle !== undefined
+      ? ` && JSON.stringify(c.input).includes(${JSON.stringify(needle)})`
+      : '';
+  const expr =
+    `(context.providerResponse?.metadata?.toolCalls ?? [])` +
+    `.some(c => c.name === ${name}${inputCheck})`;
+  return { type: 'javascript', value: expr };
 }
 
 interface TestCase {
@@ -55,6 +79,9 @@ export default async function generate(): Promise<TestCase[]> {
     }
     for (const s of expected.forbidden_substrings ?? []) {
       assert.push({ type: 'not-contains', value: s });
+    }
+    for (const tc of expected.tool_calls ?? []) {
+      assert.push(toolCallAssertion(tc));
     }
 
     const tc: TestCase = {

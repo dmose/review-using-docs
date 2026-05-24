@@ -28,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restructured the repository as a marketplace + plugin layout and unified
   the eval runner around a single `run.sh` driving both skill-direct and
   plugin-install modes.
+- Eval provider now invokes `claude -p --output-format stream-json --verbose`
+  and parses the NDJSON event stream, exposing `tool_use` invocations in
+  `metadata.toolCalls`. Fixtures can assert on tool calls via a new
+  `tool_calls` field in `expected.json`, closing the false-positive gap where
+  substring-only assertions could pass on model narration alone.
 
 ### Fixed
 
