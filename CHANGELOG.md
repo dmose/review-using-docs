@@ -12,10 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `review-using-docs` skill that maps changed files to modules via `/mots.yaml`,
   loads each module's documentation from `includes` paths, and performs the
   review with those docs in context.
-- Output-based canary eval (`eval/`) with fixtures, runner (`run.sh`), and
-  grader (`grade.py`). Supports `--mode skill`, `--mode plugin`, `--fixture`,
-  and `--self-test`. Plugin state is scoped per-fixture so the eval does not
-  touch `~/.claude/`.
+- Output-based canary eval driven by [promptfoo](https://www.promptfoo.dev/),
+  with a strict-typed TypeScript provider (`providers/claude-cli.ts`) that
+  stages each fixture in a tmp git repo and shells out to `claude -p`.
+  Fixture-derived test cases come from `tests/generate.ts`; npm scripts cover
+  the default skill-direct run, plugin-install across all fixtures
+  (`eval:plugin`), and a self-test against a mock `claude` shim
+  (`eval:selftest`). Plugin state is scoped per-fixture via
+  `CLAUDE_CODE_PLUGIN_CACHE_DIR` + `--scope local` so the eval does not touch
+  `~/.claude/`. `node:test` suite (`tests/provider.test.ts`) covers provider
+  edge cases.
 - Marketplace + plugin packaging (`.claude-plugin/marketplace.json`,
   `review-using-docs/.claude-plugin/`) so the skill can be installed via
   `claude plugin marketplace add` / `claude plugin install`.
@@ -25,9 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Restructured the repository as a marketplace + plugin layout and unified
-  the eval runner around a single `run.sh` driving both skill-direct and
-  plugin-install modes.
+- Restructured the repository as a marketplace + plugin layout.
+- Split developer-only docs (MCP dependency notes, eval harness) out of the
+  README into `DEVELOPMENT.md`; README now focuses on install and usage.
 - Eval provider now invokes `claude -p --output-format stream-json --verbose`
   and parses the NDJSON event stream, exposing `tool_use` invocations in
   `metadata.toolCalls`. Fixtures can assert on tool calls via a new
