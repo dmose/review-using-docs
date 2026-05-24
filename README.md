@@ -57,29 +57,58 @@ manifest parsing
 
 ## Eval
 
-`eval/` contains an output-based canary eval. The fixture's reference doc
-contains a unique canary phrase (`REVIEW_CONTRACT_STABLE_WIDGET_IDS`) plus
-an instruction to mention it when a specific invariant is violated. The
-fixture patch violates that invariant. The grader greps the model output
-for the canary, the offending file path, and the offending change — the
-canary cannot plausibly appear unless the model actually loaded the doc
-via `mots.yaml`.
+`eval/` contains an output-based canary eval driven by
+[promptfoo](https://www.promptfoo.dev/). Each fixture stages a synthetic
+working tree, runs the real `claude` CLI against it (via
+`providers/claude-cli.ts`), and grades the response with assertions
+declared in the fixture's `expected.json`. The provider invokes Claude
+with `--output-format stream-json --verbose` so assertions can target
+both the final assistant text and the underlying tool invocations.
+
+The canonical fixture (`basic-doc-selection`) puts a unique canary phrase
+(`REVIEW_CONTRACT_STABLE_WIDGET_IDS`) in a reference doc and a violating
+change in the patch. The canary cannot plausibly appear in the review
+unless the model actually loaded the doc via `mots.yaml`.
 
 ```bash
-bash eval/run.sh                  # default: skill-direct x all fixtures + plugin-install x smoke fixture
-bash eval/run.sh --mode skill     # skill-direct on every fixture
-bash eval/run.sh --mode plugin    # plugin-install on every fixture (slower; catches packaging regressions)
-bash eval/run.sh --fixture NAME   # scope to one fixture
-bash eval/run.sh --self-test      # exercise the runner's helpers against a mock claude
+npm run eval            # default: skill-direct x all fixtures + plugin-install x smoke fixture
+npm run eval:plugin     # plugin-install on every fixture (slower; catches packaging regressions)
+npm run eval:selftest   # exercise the provider end-to-end against a mock `claude` shim
+npm test                # unit tests for the provider + stream-json parser
 ```
 
-Exits 0 with `Total: N runs, 0 failure(s)` on success. Plugin state is
-scoped per-fixture via `CLAUDE_CODE_PLUGIN_CACHE_DIR` + `--scope local`, so
-the eval does not touch `~/.claude/`.
+To scope a run to one fixture, pass a filter through to promptfoo:
+
+```bash
+NODE_OPTIONS='--import tsx' npx promptfoo eval -c promptfooconfig.ts \
+  --filter-pattern '^basic-doc-selection$'
+```
+
+Plugin state is scoped per-fixture via `CLAUDE_CODE_PLUGIN_CACHE_DIR` +
+`--scope local`, so the eval does not touch `~/.claude/`.
 
 Override the Claude invocation via `CLAUDE_CMD=…` and preserve work dirs
 for inspection with `KEEP_WORK_DIR=1`.
 
-To add a new eval, drop a directory under `eval/fixtures/<name>/` containing
-`mots.yaml`, `prompt.txt`, `patch.diff`, `expected.json`, and `browser/`.
-`bash eval/run.sh` picks it up automatically.
+### Adding a fixture
+
+Drop a directory under `eval/fixtures/<name>/` containing `mots.yaml`,
+`prompt.txt`, `patch.diff`, `expected.json`, and `browser/`. The test
+generator (`tests/generate.ts`) picks it up automatically.
+
+`expected.json` supports three assertion families:
+
+```json
+{
+  "required_substrings": ["..."],
+  "forbidden_substrings": ["..."],
+  "tool_calls": [
+    { "name": "mcp__moz__get_phabricator_revision", "input_contains": "291014" }
+  ]
+}
+```
+
+`tool_calls` asserts on the actual `tool_use` events captured from the
+stream-json output, not on text mentions of the tool name — use it when
+you want to verify the model genuinely invoked a tool with the expected
+input.
