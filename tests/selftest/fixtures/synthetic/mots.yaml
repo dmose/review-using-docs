@@ -1,0 +1,10 @@
+%YAML 1.2
+---
+repo: synthetic-selftest
+modules:
+  - name: Foo
+    machine_name: foo
+    description: Synthetic selftest fixture
+    includes:
+      - browser/foo/**/*
+    excludes: []

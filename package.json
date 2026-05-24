@@ -1,0 +1,26 @@
+{
+  "name": "review-using-docs-eval",
+  "version": "0.1.0",
+  "private": true,
+  "description": "promptfoo + TypeScript eval harness for the review-using-docs plugin",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "pretest": "tsc --noEmit",
+    "test": "node --test --import tsx 'tests/**/*.test.ts'",
+    "preeval": "tsc --noEmit",
+    "eval": "NODE_OPTIONS='--import tsx' promptfoo eval -c promptfooconfig.ts",
+    "preeval:plugin": "tsc --noEmit",
+    "eval:plugin": "NODE_OPTIONS='--import tsx' promptfoo eval -c promptfooconfig.plugin.ts",
+    "preeval:selftest": "tsc --noEmit",
+    "eval:selftest": "PATH=\"$PWD/tests/selftest/bin:$PATH\" NODE_OPTIONS='--import tsx' promptfoo eval -c promptfooconfig.selftest.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/shell-quote": "^1.7.5",
+    "promptfoo": "^0.121.12",
+    "shell-quote": "^1.8.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0"
+  }
+}

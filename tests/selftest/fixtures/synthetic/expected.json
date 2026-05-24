@@ -1,0 +1,4 @@
+{
+  "required_substrings": ["MOCK_CLAUDE_OK", "selftest prompt"],
+  "forbidden_substrings": ["TRACEBACK"]
+}

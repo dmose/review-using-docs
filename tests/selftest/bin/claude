@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Mock `claude` used by the eval selftest. Echoes a known marker plus stdin so
+# the generated assertions (required_substrings: ["MOCK_CLAUDE_OK", "selftest prompt"])
+# pass without ever hitting the real Claude CLI.
+set -euo pipefail
+
+if [[ "${1:-}" == "plugin" ]]; then
+  echo "MOCK_CLAUDE_OK plugin:${2:-}:${3:-}:${4:-}"
+  exit 0
+fi
+
+echo "MOCK_CLAUDE_OK"
+cat
