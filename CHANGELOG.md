@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `bin/release.mjs` release script that bumps the plugin and marketplace
+  versions in lockstep, rewrites the `## [Unreleased]` section in
+  `CHANGELOG.md` to a versioned heading with a GitHub compare link, commits,
+  tags `vX.Y.Z`, and pushes `develop`, `main`, and the tag. Hardened against
+  partial failures: all new file contents are computed in memory before any
+  write, preflight checks confirm `plugin.json` `name` and
+  `marketplace.json` `source` align, and a stale `vX.Y.Z` tag that isn't an
+  ancestor of `develop` prompts before linking.
 - `Module Overrides` section in the `review-using-docs` skill that supplements
   `/mots.yaml` `includes` for modules whose upstream mots.yaml patch is still
   in review. Initial entry covers `inproduct_messaging` (ASRouter,
@@ -39,6 +47,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restructured the repository as a marketplace + plugin layout.
 - Split developer-only docs (MCP dependency notes, eval harness) out of the
   README into `DEVELOPMENT.md`; README now focuses on install and usage.
+- Reframed the README intro around the user-facing value (review with
+  module docs in context), replaced the long technical description with
+  concrete usage examples for patch-author and patch-reviewer flows, added
+  a feedback link to the `#fxms-auto-review` Slack channel, and surfaced
+  the third-party marketplace auto-update opt-in steps.
+- `DEVELOPMENT.md` now documents how to link a working dev tree into a
+  local Firefox checkout via `claude plugin marketplace add --scope local`.
 - Eval provider now invokes `claude -p --output-format stream-json --verbose`
   and parses the NDJSON event stream, exposing `tool_use` invocations in
   `metadata.toolCalls`. Fixtures can assert on tool calls via a new

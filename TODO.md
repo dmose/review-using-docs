@@ -10,25 +10,28 @@
 - [x] How & when to use
 - [x] Document auto-update
 - [x] Must run inside Firefox tree, even when reviewing phab
-- [x] Experimental: FEEDBACK
+- [x] Feedback on Slack please!
 
 ## Infra
 - [x] Add CHANGELOG.md
 - [x] Add dev docs to DEVELOPMENT.md
 - [x] Create develop branch
-- [ ] Create versioned two-branch setup with release scriptage like compare
-- [ ] Release version 0.1
+- [x] Create versioned two-branch setup with release scriptage like compare
+- [ ] Do a release
 
 ## Testing
 - [x] finish configuring mac snapshot
 - [x] hardwire in this module's docs
-- [ ] verify 0.1 install
+- [ ] verify release install
 
 ## Deploy
 - [ ] Post to Slack
 - [ ] ?create google doc with two example reviews x multiple outputs each?
 
-## LATER: dependencies
+## LATER:
+### quality
+- [ ] Make
+### dependencies
 - [ ] merge OMC mots patch
   - [x] check & update patch
   - [ ] wait for review
