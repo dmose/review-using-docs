@@ -1,14 +1,9 @@
 # review-using-docs
 
-A Claude Code skill that, when invoked on a code review task, first reads
-`/mots.yaml` in the project root, maps each changed file to its module,
-scans each module's `includes` for documentation paths (entries whose path
-contains `docs` outside `docshell`), loads those reference docs, and *then*
-performs the code review with those docs in context.
+A Claude Code skill that reviews changed files with the relevant
+module documentation loaded into context.
 
-Built for Firefox / mozilla-central, but works in any tree whose top-level
-`mots.yaml` follows the same shape (modules with `includes` paths that
-identify their docs by containing `docs` outside `docshell`).
+Docs are sourced from `mots.yaml` in mozilla-central.
 
 ## Install
 
