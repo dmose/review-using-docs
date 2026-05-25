@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `Module Overrides` section in the `review-using-docs` skill that supplements
+  `/mots.yaml` `includes` for modules whose upstream mots.yaml patch is still
+  in review. Initial entry covers `inproduct_messaging` (ASRouter,
+  about:welcome, messaging-system schemas, and UITour docs); remove when
+  those paths appear under `inproduct_messaging` in `/mots.yaml`.
 - `review-using-docs` skill that maps changed files to modules via `/mots.yaml`,
   loads each module's documentation from `includes` paths, and performs the
   review with those docs in context.

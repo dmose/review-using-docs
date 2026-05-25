@@ -23,14 +23,15 @@ Use this skill when the user asks for a code review that should consult referenc
 3. Select reference material from Mots.
    - For each matched module, scan its `includes` list.
    - Treat an entry as a reference-material path if it contains `docs` outside of `docshell`, or contains `schema`/`schemas` (i.e., the regex `docs(?!hell)|schemas?` matches the entry).
+   - Also include any paths listed under the matched module's `machine_name` in the **Module Overrides** section below.
    - If the entry is a glob or directory, read the files it expands to.
-   - Deduplicate entries across modules.
-   - If no `includes` entry of the matched module qualifies, the module has no Mots-listed reference material — note this and continue with ordinary review.
+   - Deduplicate entries across `/mots.yaml` and the overrides table.
+   - If neither `/mots.yaml` nor the overrides table yields a qualifying entry for the matched module, the module has no listed reference material — note this and continue with ordinary review.
 
 4. Read reference material before reviewing code.
    - Extract expected behavior, architecture, invariants, API contracts, ownership boundaries, and testing expectations.
    - Track which reference material informed which files or modules.
-   - If a matched module has no qualifying `includes` entries, say so briefly and continue with ordinary review.
+   - If a matched module has no qualifying entries in `/mots.yaml` or the overrides table, say so briefly and continue with ordinary review.
 
 5. Review the changed code normally.
    - Prioritize correctness, regressions, edge cases, API contract mismatches, missing tests, maintainability, and security or privacy risks.
@@ -45,10 +46,24 @@ Use this skill when the user asks for a code review that should consult referenc
    - Include open questions or assumptions.
    - Keep any summary brief and secondary.
 
+## Module Overrides
+
+These supplement `/mots.yaml` `includes` while the corresponding upstream
+mots.yaml patches are in review. Treat each listed path as a reference-material
+source for the named module. Remove an entry once the upstream mots.yaml change
+lands.
+
+- `inproduct_messaging`
+  - `browser/components/asrouter/docs/**/*`
+  - `browser/components/aboutwelcome/docs/**/*`
+  - `toolkit/components/messaging-system/schemas/**/*`
+  - `browser/components/uitour/docs/**/*`
+  - **Remove when:** all four paths appear under `inproduct_messaging` in `/mots.yaml`.
+
 ## Firefox Notes
 
 - Follow repository search guidance from `AGENTS.md`.
 - Use `searchfox-cli` for Firefox source discovery outside local changed files.
 - Use narrow local commands for changed-file discovery and reading selected reference material.
-- `/mots.yaml` is the source of module path metadata and review reference-material links.
-- Entries in matched modules' `includes` whose path matches the reference-material regex (`docs(?!hell)|schemas?`) are the source of truth for reference material.
+- `/mots.yaml` is the source of module path metadata and review reference-material links, supplemented by the **Module Overrides** section above for modules whose upstream mots.yaml patch is still in review.
+- Entries in matched modules' `includes` whose path matches the reference-material regex (`docs(?!hell)|schemas?`), plus any module-specific override paths, are the source of truth for reference material.

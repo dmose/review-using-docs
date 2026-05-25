@@ -1,5 +1,5 @@
 # TODO list
--[ ] Workaround lack of OMC doc info with hardcoding
+-[x] Workaround lack of OMC doc info with hardcoding
 -[x] Make skill recognize schemas as worth reading
 -[ ] EDD reviews from phab (1)
 -   [x] add moz-mcp dependency
@@ -19,7 +19,7 @@
 -[ ] finish configuring mac snapshot
 -[ ] attempt actual install
 -[ ] test rolling back snapshot
--[ ] hardwire in this module's docs
+-[x] hardwire in this module's docs
 
 # Deploy
 -[ ] Post to Slack
@@ -29,6 +29,10 @@
   -[x] check & update patch
   -[ ] wait for review
   -[ ] merge
+  -[ ] remove `inproduct_messaging` entry from SKILL.md Module Overrides
 -[ ] Make it run outside of firefox tree
 -[ ] Get files using curl or searchfox mcp
+-[ ] Consider ditching promptfoo entirely
+-[ ] Consider making the evals pull in the current mots.yaml from searchfox.
+
 
