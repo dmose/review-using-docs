@@ -1,8 +1,6 @@
 # TODO list
--[ ] merge OMC mots patch
-  -[x] check & update patch
-  -[ ] wait for review
-  -[ ] merge
+-[ ] Workaround lack of OMC doc info with hardcoding
+-[ ] Make skill recognize schemas as worth reading
 -[ ] EDD reviews from phab (1)
 -   [x] add moz-mcp dependency
 -   [x] add eval for phab usage
@@ -17,7 +15,7 @@
 -[ ] Create versioned two-branch setup with release scriptage like compare
 
 # Testing
--[ ] create google with example review
+-[ ] create google doc with two example reviews x multiple outputs each
 -[ ] finish configuring mac snapshot
 -[ ] attempt actual install
 -[ ] test rolling back snapshot
@@ -27,6 +25,10 @@
 -[ ] Post to Slack
 
 ## LATER: dependencies
+-[ ] merge OMC mots patch
+  -[x] check & update patch
+  -[ ] wait for review
+  -[ ] merge
 -[ ] Make it run outside of firefox tree
 -[ ] Get files using curl or searchfox mcp
 
