@@ -10,8 +10,7 @@
 - [x] How & when to use
 - [x] Document auto-update
 - [x] Must run inside Firefox tree, even when reviewing phab
-- [ ] Experimental: FEEDBACK
-  - [ ] Slack, Element, Github,
+- [x] Experimental: FEEDBACK
 
 ## Infra
 - [x] Add CHANGELOG.md

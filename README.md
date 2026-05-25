@@ -1,7 +1,8 @@
 # review-using-docs
 
-A Claude Code skill that reviews changed files with the relevant
-module documentation loaded into context.
+An experimental time-saving Claude Code skill that code-reviews
+changes with relevant module documentation loaded into context to
+help catch module-specific issues.
 
 Docs are sourced from `mots.yaml` in mozilla-central.
 
@@ -34,6 +35,10 @@ patch to (hopefully!) save time before you dig in further:
 ```
 /review-using-docs D300426
 ```
+
+PLEASE GIVE FEEDBACK!  
+[#fxms-auto-review](https://mozilla.enterprise.slack.com/archives/C0B5UQ806MR)
+channel on Slack
 
 ## Known issues
 * This plugin may fail when run outside of a Firefox source tree.
