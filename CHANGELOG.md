@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-05-25
+
 ### Added
 
 - `bin/release.mjs` release script that bumps the plugin and marketplace
@@ -75,4 +77,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HuggingFace, etc.). Drops `npm install` footprint from ~692 to ~416
   packages.
 
-[Unreleased]: https://github.com/dmose/review-using-docs/commits/main
+[Unreleased]: https://github.com/dmose/review-using-docs/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/dmose/review-using-docs/releases/tag/v0.1.1

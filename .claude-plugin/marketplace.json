@@ -9,7 +9,7 @@
     {
       "name": "review-using-docs",
       "description": "Review changed files against documentation selected from /mots.yaml before performing a normal code review.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "review-using-docs"
       },
