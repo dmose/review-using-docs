@@ -8,8 +8,8 @@
 
 ## Documentation
 - [x] How & when to use
-- [ ] Document auto-update
-- [ ] Must run inside Firefox tree, even when reviewing phab
+- [x] Document auto-update
+- [x] Must run inside Firefox tree, even when reviewing phab
 - [ ] Experimental: FEEDBACK
   - [ ] Slack, Element, Github,
 

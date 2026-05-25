@@ -35,6 +35,9 @@ patch to (hopefully!) save time before you dig in further:
 /review-using-docs D300426
 ```
 
+## Known issues
+* This plugin may fail when run outside of a Firefox source tree.
+
 ## Development
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for notes on the bundled `moz` MCP
