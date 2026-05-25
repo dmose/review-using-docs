@@ -12,22 +12,17 @@ claude plugin marketplace add dmose/review-using-docs
 claude plugin install review-using-docs@review-using-docs-local
 ```
 
-(If the `owner/repo` shorthand isn't supported by your `claude` version, use
-the full URL: `claude plugin marketplace add https://github.com/dmose/review-using-docs.git`.)
+## Usage examples, from the Claude Code prompt:
 
-To uninstall:
-
-```bash
-claude plugin uninstall review-using-docs@review-using-docs-local
-claude plugin marketplace remove review-using-docs-local
+As patch author, get a rough-draft automated review of your own local changes before submitting:
+```
+/review-using-docs the code on this branch
 ```
 
-## Usage
-
-In a Claude session inside the project you want to review:
-
+As a patch reviewer, get a rough-draft automated review to of a Phabricator
+patch to (hopefully!) save time before you dig in further:
 ```
-/review-using-docs review the changed files under <some/subdir>
+/review-using-docs D300426
 ```
 
 ## Development

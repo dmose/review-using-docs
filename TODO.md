@@ -16,6 +16,7 @@
 ## Infra
 - [x] Add CHANGELOG.md
 - [x] Add dev docs to DEVELOPMENT.md
+- [x] Create develop branch
 - [ ] Create versioned two-branch setup with release scriptage like compare
 - [ ] Release version 0.1
 
@@ -25,8 +26,8 @@
 - [ ] verify 0.1 install
 
 ## Deploy
--[ ] Post to Slack
--[ ] create google doc with two example reviews x multiple outputs each
+- [ ] Post to Slack
+- [ ] ?create google doc with two example reviews x multiple outputs each?
 
 ## LATER: dependencies
 - [ ] merge OMC mots patch
