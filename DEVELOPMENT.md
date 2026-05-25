@@ -2,6 +2,13 @@
 
 Notes for people working on the `review-using-docs` skill itself.
 
+## Linking your dev tree into your local Firefox tree
+Paths are examples; edit to match your setup.
+1. ```claude plugin marketplace add ~/s/llm-tools/review-using-docs --scope local```
+2. ```claude plugin install review-using-docs@review-using-docs-local --scope
+   local```
+3. When you make a change to the skill in your dev tree it's safest to quit claude code and restart it, though `/reload-plugins` should work.
+
 ## MCP dependency: `moz`
 
 The plugin declares a `moz` MCP server (HTTP, pointing at
