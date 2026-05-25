@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { execFileSync, execSync } from "node:child_process";
+import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
@@ -109,6 +109,33 @@ if (pluginJson.version !== marketplaceEntry.version) {
   );
 }
 
+if (pluginJson.name !== PLUGIN_NAME) {
+  die(
+    `Plugin name mismatch: ${PLUGIN_JSON} has "${pluginJson.name}", ` +
+      `expected "${PLUGIN_NAME}". Reconcile first.`
+  );
+}
+
+if (typeof marketplaceEntry.source !== "string" || !marketplaceEntry.source) {
+  die(
+    `Missing or invalid marketplaceEntry.source in ${MARKETPLACE_JSON}.`
+  );
+}
+const expectedSourceDir = join(ROOT, marketplaceEntry.source);
+const expectedPluginJson = join(expectedSourceDir, ".claude-plugin", "plugin.json");
+if (expectedPluginJson !== PLUGIN_JSON) {
+  die(
+    `marketplaceEntry.source ("${marketplaceEntry.source}") resolves to ` +
+      `${expectedPluginJson}, not the expected ${PLUGIN_JSON}. Reconcile first.`
+  );
+}
+if (!existsSync(expectedSourceDir) || !statSync(expectedSourceDir).isDirectory()) {
+  die(
+    `marketplaceEntry.source ("${marketplaceEntry.source}") does not resolve ` +
+      `to a directory at ${expectedSourceDir}.`
+  );
+}
+
 const currentVersion = pluginJson.version;
 
 console.log(`\nCurrent version: ${currentVersion}`);
@@ -130,17 +157,18 @@ if (confirm && confirm.toLowerCase() !== "y") {
   process.exit(0);
 }
 
-// --- Update plugin.json and marketplace.json ---
+// --- Compute new file contents in memory (no writes yet) ---
+//
+// All validation that could fail (CHANGELOG regex, link-form match,
+// tagExists confirm) happens before any file is written. If any step here
+// dies, the working tree is untouched and the operator can re-run after
+// fixing the input. Writes are deferred to just before `git add` below.
 
 pluginJson.version = newVersion;
-writeFileSync(PLUGIN_JSON, JSON.stringify(pluginJson, null, 2) + "\n");
-console.log(`Updated ${PLUGIN_JSON} to ${newVersion}`);
+const newPluginJsonContent = JSON.stringify(pluginJson, null, 2) + "\n";
 
 marketplaceEntry.version = newVersion;
-writeFileSync(MARKETPLACE_JSON, JSON.stringify(marketplaceJson, null, 2) + "\n");
-console.log(`Updated ${MARKETPLACE_JSON} to ${newVersion}`);
-
-// --- Update CHANGELOG.md ---
+const newMarketplaceJsonContent = JSON.stringify(marketplaceJson, null, 2) + "\n";
 
 let changelog = readFileSync(CHANGELOG, "utf8");
 
@@ -164,9 +192,43 @@ changelog = changelog.replace(
 // after that it's `${REPO_URL}/compare/v${currentVersion}...HEAD`.
 const newUnreleasedLink = `[Unreleased]: ${REPO_URL}/compare/v${newVersion}...HEAD`;
 
-// If a tag for the current version exists, link by comparison; otherwise
-// (first release, or current version was never tagged) link to the tag page.
-const newVersionLink = tagExists(`v${currentVersion}`)
+// If a tag for the current version exists AND it is an ancestor of develop,
+// the tag is healthy (it points at a commit on the release branch) — use the
+// compare-link form silently, matching the pre-patch happy path. Only prompt
+// when the tag exists but is NOT in develop's ancestry, which is the stale-
+// tag case (e.g., left over from an aborted prior release pointing at
+// unrelated history).
+let useCompareForm = false;
+if (tagExists(`v${currentVersion}`)) {
+  let tagInAncestry = false;
+  try {
+    run(`git merge-base --is-ancestor v${currentVersion} develop`, {
+      stdio: "pipe",
+    });
+    tagInAncestry = true;
+  } catch {
+    tagInAncestry = false;
+  }
+
+  if (tagInAncestry) {
+    useCompareForm = true;
+  } else {
+    let tagInfo = "(unknown)";
+    try {
+      tagInfo = run(`git log -1 --format=%h\\ %s v${currentVersion}`, {
+        stdio: "pipe",
+      });
+    } catch {
+      // Best-effort; fall through with placeholder.
+    }
+    const tagConfirm = await ask(
+      `Tag v${currentVersion} exists (${tagInfo}) but is NOT an ancestor of ` +
+        `develop. Use compare-link form anyway? (y/n) [n]: `
+    );
+    useCompareForm = tagConfirm.toLowerCase() === "y";
+  }
+}
+const newVersionLink = useCompareForm
   ? `[${newVersion}]: ${REPO_URL}/compare/v${currentVersion}...v${newVersion}`
   : `[${newVersion}]: ${REPO_URL}/releases/tag/v${newVersion}`;
 
@@ -193,7 +255,15 @@ if (changelog === before) {
   die("CHANGELOG.md link replacement made no changes");
 }
 
-writeFileSync(CHANGELOG, changelog);
+const newChangelogContent = changelog;
+
+// --- Write all three files together (point of no return for the tree) ---
+
+writeFileSync(PLUGIN_JSON, newPluginJsonContent);
+console.log(`Updated ${PLUGIN_JSON} to ${newVersion}`);
+writeFileSync(MARKETPLACE_JSON, newMarketplaceJsonContent);
+console.log(`Updated ${MARKETPLACE_JSON} to ${newVersion}`);
+writeFileSync(CHANGELOG, newChangelogContent);
 console.log(`Updated CHANGELOG.md for ${newVersion}`);
 
 // --- Commit, merge, tag ---
@@ -201,7 +271,10 @@ console.log(`Updated CHANGELOG.md for ${newVersion}`);
 const developHead = run("git rev-parse HEAD");
 
 try {
-  run(`git add "${PLUGIN_JSON}" "${MARKETPLACE_JSON}" "${CHANGELOG}"`);
+  execFileSync("git", ["add", PLUGIN_JSON, MARKETPLACE_JSON, CHANGELOG], {
+    cwd: ROOT,
+    stdio: "inherit",
+  });
   run(`git commit -m "Release v${newVersion}"`);
   console.log(`Committed release on develop`);
 
