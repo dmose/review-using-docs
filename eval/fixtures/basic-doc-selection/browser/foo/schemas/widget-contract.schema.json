@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/widget-contract.schema.json",
+  "title": "Widget Contract",
+  "description": "Schema for persisted widgets. IDs must be stable, approved identifiers — not runtime-generated. If a patch changes a persisted widget ID to a runtime-generated value (for example, crypto.randomUUID()), the review must mention: WIDGET_SCHEMA_STABLE_ID_PATTERN",
+  "type": "object",
+  "required": ["id", "label"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable widget identifier; must be one of the approved values below.",
+      "enum": ["search-widget", "bookmark-widget", "history-widget"]
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

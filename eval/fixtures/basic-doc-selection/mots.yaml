@@ -8,4 +8,5 @@ modules:
     includes:
       - browser/foo/**/*
       - browser/foo/docs/widget-review-contract.md
+      - browser/foo/schemas/widget-contract.schema.json
     excludes: []

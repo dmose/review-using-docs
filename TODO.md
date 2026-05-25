@@ -1,6 +1,6 @@
 # TODO list
 -[ ] Workaround lack of OMC doc info with hardcoding
--[ ] Make skill recognize schemas as worth reading
+-[x] Make skill recognize schemas as worth reading
 -[ ] EDD reviews from phab (1)
 -   [x] add moz-mcp dependency
 -   [x] add eval for phab usage

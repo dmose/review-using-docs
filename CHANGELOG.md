@@ -42,9 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Skill now reads documentation paths from each module's `includes` field
-  (filtering for entries whose path contains `docs` outside `docshell`)
-  rather than a non-existent `docs:` field.
+- Skill now reads reference-material paths (documentation and schemas) from
+  each module's `includes` field (filtering for entries matching the regex
+  `docs(?!hell)|schemas?`) rather than a non-existent `docs:` field.
 - Eval fixture's `mots.yaml` shape aligned with the real `mots.yaml`
   schema used by mozilla-central.
 

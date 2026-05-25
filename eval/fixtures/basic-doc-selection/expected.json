@@ -1,6 +1,7 @@
 {
   "required_substrings": [
     "REVIEW_CONTRACT_STABLE_WIDGET_IDS",
+    "WIDGET_SCHEMA_STABLE_ID_PATTERN",
     "browser/foo/Widget.js",
     "crypto.randomUUID"
   ],
