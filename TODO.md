@@ -17,12 +17,12 @@
 - [x] Add dev docs to DEVELOPMENT.md
 - [x] Create develop branch
 - [x] Create versioned two-branch setup with release scriptage like compare
-- [ ] Do a release
+- [x] Do a release
 
 ## Testing
 - [x] finish configuring mac snapshot
 - [x] hardwire in this module's docs
-- [ ] verify release install
+- [x] verify release install
 
 ## Deploy
 - [ ] Post to Slack
@@ -30,7 +30,12 @@
 
 ## LATER:
 ### quality
-- [ ] Make
+- [ ] Dig into using existing review evals
+- [ ] Check competitiveness with /code-review in CC
+- [ ] Module choice
+  - [ ] Force specific module?
+  - [ ] Allow multiple?  Eval quality gate?
+- [ ] Investigate using together with custom-module-reviewer
 ### dependencies
 - [ ] merge OMC mots patch
   - [x] check & update patch
@@ -39,5 +44,5 @@
   - [ ] remove Module Overrides entirely from this skill
 -[ ] Make it run outside of firefox tree
 -[ ] Consider ditching promptfoo entirely
-
+### support other agents (Codex? OpenCode?)
 

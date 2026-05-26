@@ -36,8 +36,13 @@ patch to (hopefully!) save time before you dig in further:
 /review-using-docs D300426
 ```
 
-PLEASE GIVE FEEDBACK!  
-[#fxms-auto-review](https://mozilla.enterprise.slack.com/archives/C0B5UQ806MR)
+## PLEASE GIVE FEEDBACK!
+
+* What's working well?
+* What could be better?
+* What's confusing?
+
+[**#fxms-review-experiments**](https://mozilla.enterprise.slack.com/archives/C0B5UQ806MR)
 channel on Slack
 
 ## Known issues

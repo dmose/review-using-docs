@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- README feedback section reformatted with prompting questions and
+  pointed at the `#fxms-review-experiments` Slack channel (previously
+  `#fxms-auto-review`).
+
 ## [0.1.1] - 2026-05-25
 
 ### Added
