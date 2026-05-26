@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-26
+
 ### Changed
 
 - README feedback section reformatted with prompting questions and
@@ -83,5 +85,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HuggingFace, etc.). Drops `npm install` footprint from ~692 to ~416
   packages.
 
-[Unreleased]: https://github.com/dmose/review-using-docs/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/dmose/review-using-docs/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/dmose/review-using-docs/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/dmose/review-using-docs/releases/tag/v0.1.1

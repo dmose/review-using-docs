@@ -2,7 +2,7 @@
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "review-using-docs",
   "description": "Review changed files against documentation selected from /mots.yaml before performing a normal code review.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": {
     "name": "review-using-docs"
   },
