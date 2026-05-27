@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- README feedback prompt reworded from "What's confusing?" to "What's
+  puzzling or unclear?".
+
 ## [0.2.0] - 2026-05-26
 
 ### Changed

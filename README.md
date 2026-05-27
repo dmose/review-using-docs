@@ -40,7 +40,7 @@ patch to (hopefully!) save time before you dig in further:
 
 * What's working well?
 * What could be better?
-* What's confusing?
+* What's puzzling or unclear?
 
 [**#fxms-review-experiments**](https://mozilla.enterprise.slack.com/archives/C0B5UQ806MR)
 channel on Slack
