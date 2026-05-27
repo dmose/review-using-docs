@@ -25,22 +25,29 @@
 - [x] verify release install
 
 ## Deploy
-- [ ] Post to Slack
+- [x] Post to Slack
 - [ ] ?create google doc with two example reviews x multiple outputs each?
 
 ## LATER:
 ### quality
-- [ ] Dig into using existing review evals
-- [ ] Check competitiveness with /code-review in CC
+- [ ] See if there are existing evals we can use
 - [ ] Module choice
   - [ ] Force specific module?
   - [ ] Allow multiple?  Eval quality gate?
+  - [ ] Look into path-scoped rules for Claude Code
+    - [ ] Claude code has this built it, may require skill verbiage to force read when looking at a diff
+      the rules to be read if found in a diff
+    - [ ] What about Codex? Putting it in bugbug mcp could help?
+- [ ] Check competitiveness with /code-review in CC
 - [ ] Investigate using together with custom-module-reviewer
+- [ ] Implement `mots doc` or similar to generate useful
+      doc map (see how claude docs on anthropic sites are
+      mapped)
 ### dependencies
 - [ ] merge OMC mots patch
   - [x] check & update patch
-  - [ ] wait for review
-  - [ ] merge into mozilla-central
+  - [x] wait for review
+  - [x] merge into mozilla-central
   - [ ] remove Module Overrides entirely from this skill
 -[ ] Make it run outside of firefox tree
 -[ ] Consider ditching promptfoo entirely
